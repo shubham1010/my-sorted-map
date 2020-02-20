@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "queueForTree.h"
-
 /*typedef struct AVLTreeStruct {
 	int data;
 	struct AVLTreeStruct *left,*right;
@@ -19,7 +18,8 @@ AVLTree *SingleRotateLeft(AVLTree *X);
 AVLTree *SingleRotateRight(AVLTree *W);
 AVLTree *DoubleRotateLeft(AVLTree *Z);
 AVLTree *DoubleRotateRight(AVLTree *Z);
-AVLTree *Insert(AVLTree *root,int data);
+//AVLTree *Insert(AVLTree *root,int data);
+void insert(AVLTree **root,int data);
 
 int main(void) {
 	AVLTree *root=NULL;	
@@ -40,7 +40,7 @@ int main(void) {
 			case 1:
 				printf("\nEnter data to insert into node: ");
 				scanf("%d",&data);
-				root=Insert(root,data);
+				insert(&root,data);
 				break;
 			case 2:
 				printf("\nInorder Traversal: ");
@@ -81,8 +81,6 @@ int max(unsigned int a, unsigned int b) {
 	return (a>b ? a : b);
 }
 
-
-
 AVLTree *SingleRotateLeft(AVLTree *X) {
 	AVLTree *W=X->left;
 	
@@ -115,40 +113,48 @@ AVLTree *DoubleRotateRight(AVLTree *Z) {
 	return SingleRotateRight(Z);
 }
 
-AVLTree *Insert(AVLTree *root,int data) {
-	if(!root) {
-		root = (AVLTree *)malloc(sizeof(AVLTree));
-		if(!root) {
+//AVLTree *Insert(AVLTree *root,int data) {
+void insert(AVLTree **root,int data) {
+	if(!(*root)) {
+		AVLTree *newNode=NULL;
+		newNode = (AVLTree *)malloc(sizeof(AVLTree));
+		if(!newNode) {
 			printf("Memory Error");
-			return NULL;
+			//return NULL;
+			exit(1);
 		}
 		else {
-			root->data = data;
-			root->height = 0;
-			root->left = root->right = NULL;
-		}
+			newNode->data = data;
+			newNode->height = 0;
+			newNode->left = newNode->right = NULL;
+			*root=newNode;
+		}	
 	}
-	else if(data < root->data) {
-		root->left = Insert(root->left,data);
-		if((Height(root->left)-Height(root->right))==2) {
-			if (data < root->left->data) 
-				root = SingleRotateLeft(root);
+	else if(data <= (*root)->data) {
+		//(*root)->left = Insert((*root)->left,data);
+		(*root)->height += 1;
+		insert(&((*root)->left),data);
+		/*if((Height((*root)->left)-Height((*root)->right))==2) {
+			if (data < (*root)->left->data) 
+				*root = SingleRotateLeft(*root);
 			else
-				root = DoubleRotateLeft(root);
-		}
+				*root = DoubleRotateLeft(*root);
+		}*/
 	}
-	else if(data > root->data) {
-		root->right = Insert(root->right,data);
+	else if(data > (*root)->data) {
+		//(*root)->right = Insert((*root)->right,data);
+		(*root)->height -= 1;
+		insert(&((*root)->right),data);
 
-		if ((Height(root->right)-Height(root->left))==2) {
-			if(data < root->right->data) 
-				root = SingleRotateRight(root);
+		/*if ((Height((*root)->right)-Height((*root)->left))==2) {
+			if(data < (*root)->right->data) 
+				*root = SingleRotateRight(*root);
 			else
-				root = DoubleRotateRight(root);
+				*root = DoubleRotateRight(*root);
 		}
+		*/
 	}
 
-	root->height = max(Height(root->left),Height(root->right)) + 1;
+	//(*root)->height = max(Height((*root)->left),Height((*root)->right)) + 1;
 	//printf("\nroot->height= %u",root->height);
-	return root;
 }
