@@ -4,7 +4,7 @@
 typedef struct structBST {
 	int data;
 	struct structBST *left,*right;
-	unsigned int height;
+	int height;
 }BST;
 
 void inorder(BST *root);
@@ -72,7 +72,7 @@ void insert(BST **root,int data) {
 void inorder(BST *root) {
 	if(root) {
 		inorder(root->left);
-		printf("\n%d its height is %u",root->data,root->height);
+		printf("\n%d its height is %d",root->data,root->height);
 		inorder(root->right);
 	}
 }

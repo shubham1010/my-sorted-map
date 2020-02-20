@@ -65,7 +65,7 @@ void deleteTree(AVLTree **root) {
 void inorder(AVLTree *root) {
 	if(root) {
 		inorder(root->left);
-		printf("\n%d its height %u", root->data,root->height);
+		printf("\n%d its height %d", root->data,root->height);
 		inorder(root->right);
 	}
 }
@@ -74,7 +74,12 @@ unsigned int Height(AVLTree *root) {
 	if(!root)
 		return -1;
 	else
+		//return (root->height)>0?(root->height):(-(root->height));
 		return (root->height);
+}
+
+int abs(int n) {
+	return n>0? n : -n;
 }
 
 int max(unsigned int a, unsigned int b) {
@@ -134,27 +139,30 @@ void insert(AVLTree **root,int data) {
 		//(*root)->left = Insert((*root)->left,data);
 		(*root)->height += 1;
 		insert(&((*root)->left),data);
-		/*if((Height((*root)->left)-Height((*root)->right))==2) {
-			if (data < (*root)->left->data) 
+		//if((Height((*root)->left)-Height((*root)->right))==2) {
+		if(abs(Height(*root))==2) {
+			if ((*root)->data < (*root)->left->data) 
 				*root = SingleRotateLeft(*root);
 			else
 				*root = DoubleRotateLeft(*root);
-		}*/
+		}
 	}
 	else if(data > (*root)->data) {
 		//(*root)->right = Insert((*root)->right,data);
 		(*root)->height -= 1;
 		insert(&((*root)->right),data);
 
-		/*if ((Height((*root)->right)-Height((*root)->left))==2) {
-			if(data < (*root)->right->data) 
+		//if ((Height((*root)->right)-Height((*root)->left))==2) {
+		if(abs(Height(*root))==2) {
+			if((*root)->data < (*root)->right->data) 
 				*root = SingleRotateRight(*root);
 			else
 				*root = DoubleRotateRight(*root);
 		}
-		*/
+		
 	}
 
-	//(*root)->height = max(Height((*root)->left),Height((*root)->right)) + 1;
+	//(*root)->height = max(Height((*root)->left),abs(Height((*root)->right)))+1;
+	//(*root)->height = Height((*root)->left)+Height((*root)->right);
 	//printf("\nroot->height= %u",root->height);
 }

@@ -4,7 +4,7 @@
 typedef struct StructTree{
 	int data;
 	struct StructTree *right,*left;
-	unsigned int height;
+	int height;
 }AVLTree;
 
 typedef struct StructList{
@@ -138,7 +138,7 @@ void printByLevelOrder(AVLTree *root){
 	printf("\nLevel Order Print: ");
 	while(!isEmptyQueue(Q)){
 		temp=DeQueue(Q);
-		printf("\n%d its height %u",temp->data,temp->height);
+		printf("\n%d its height %d",temp->data,temp->height);
 		if(temp->left)
 			EnQueue(Q,temp->left);
 		if(temp->right)
