@@ -8,9 +8,13 @@ typedef struct myAVLTree {
 }AVL;
 
 void inorder(AVL *root);
-void insert(AVL **root,int data);
+AVL *insert(AVL *root,int data);
 int height(AVL *node);
 int max(int a,int b);
+AVL *leftRotate(AVL *W);
+AVL *rightRotate(AVL *X);
+int getBalanceFactor(AVL *node);
+AVL *newNode(int data);
 void deleteTree(AVL **root);
 
 int main(void) {
@@ -23,7 +27,7 @@ int main(void) {
 		if(data==-1)
 			break;
 
-		insert(&root,data);
+		root=insert(root,data);
 	}
 	inorder(root);
 	deleteTree(&root);
@@ -46,23 +50,82 @@ int height(AVL *node) {
 		return -1;
 	return (node->height);
 }
+AVL *newNode(int data) {
+	AVL *node = (AVL *)malloc(sizeof(AVL));
+	node->data = data;
+	node->left = node->right = NULL;
+	node->height = 0;
 
-void insert(AVL **root,int data) {
-	if(*root==NULL) {
-		AVL *newNode = (AVL *)malloc(sizeof(AVL));
-		newNode->data = data;
-		newNode->left = newNode->right = NULL;
-		newNode->height = 0;
-		*root=newNode;
-	}
-	else if (data < (*root)->data) {
-		insert(&((*root)->left),data);
-	}
-	else {
-		insert(&((*root)->right),data);
+	return node;
+}
+
+int getBalanceFactor(AVL *node) {
+	if(!node) 
+		return 0;
+	return (height(node->left)-height(node->right));
+}
+
+AVL *rightRotate(AVL *X) {
+	AVL *W = X->left;
+	AVL *Z = W->right;
+
+	// Rotation phase
+	W->right = X ; 
+	X->left = Z ; 
+	
+	// Updating heights
+	X->height = max(height(X->left),height(X->right))+1;
+	W->height = max(height(W->left),height(W->right))+1;
+
+	return W;
+}
+
+AVL *leftRotate(AVL *W) {
+	AVL *X = W->right;
+	AVL *Z = X->left;
+
+	// Rotation phase
+	W->right = Z;  
+	X->left = W;
+	
+	// Updating heights	
+	W->height = max(height(W->left),height(W->right))+1;
+	X->height = max(height(X->left),height(X->right))+1;
+	
+	return X;
+}
+
+AVL *insert(AVL *root,int data) {
+	if(root==NULL)
+		return (newNode(data));
+	else if (data < root->data)
+		root->left=insert(root->left,data);
+	else if(data > root->data)
+		root->right=insert(root->right,data);
+	else // no repeated elements
+		return root;
+	
+	root->height = max(height(root->left),height(root->right))+1;
+
+	int balance = getBalanceFactor(root);
+
+	if (balance>1 && data<root->left->data) 
+		return rightRotate(root);
+
+	if (balance<-1 && data>root->right->data)
+		return leftRotate(root);
+
+	if (balance>1 && data>root->left->data) {
+		root->left = leftRotate(root->left);
+		return rightRotate(root);
 	}
 
-	(*root)->height = max(height((*root)->left),height((*root)->right))+1;
+	if (balance<-1 && data<root->right->data) {
+		root->right = rightRotate(root->right);
+		return leftRotate(root);
+	}
+
+	return root;
 }
 
 void inorder(AVL *root) {
