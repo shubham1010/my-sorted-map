@@ -5,10 +5,10 @@ typedef struct StructTree{
 	int data;
 	struct StructTree *right,*left;
 	int height;
-}AVLTree;
+}AVL;
 
 typedef struct StructList{
-	AVLTree *node;
+	AVL *node;
 	struct StructList *next;
 }List;
 
@@ -17,15 +17,15 @@ typedef struct StructQueue{
 }Queue;
 
 Queue *createQueue(void);
-AVLTree *createTreeByLevelOrder(int n);
-void EnQueue(Queue *Q,AVLTree *node);
-AVLTree *getFirstElementFromQueue(Queue *Q);
-AVLTree *DeQueue(Queue *Q);
+AVL *createTreeByLevelOrder(int n);
+void EnQueue(Queue *Q,AVL *node);
+AVL *getFirstElementFromQueue(Queue *Q);
+AVL *DeQueue(Queue *Q);
 void DeleteQueue(Queue *Q);
-void printByLevelOrder(AVLTree *root);
+void printByLevelOrder(AVL *root);
 int isEmptyQueue(Queue *Q);
-void DeleteTree(AVLTree *root);
-void Inorder(AVLTree *root);
+void DeleteTree(AVL *root);
+void Inorder(AVL *root);
 
 /*int main(void){
 	int n,data;
@@ -89,7 +89,7 @@ Queue *createQueue(void){
 }
 */
 
-void EnQueue(Queue *Q,AVLTree *node){
+void EnQueue(Queue *Q,AVL *node){
 	List *listNodes=(List *)malloc(sizeof(List));
 	listNodes->node=node;
 	listNodes->next=NULL;
@@ -101,16 +101,16 @@ void EnQueue(Queue *Q,AVLTree *node){
 	}
 }
 
-AVLTree *getFirstElementFromQueue(Queue *Q){
+AVL *getFirstElementFromQueue(Queue *Q){
 	if(Q->front)
 		return (Q->front->node);
 	else
 		return NULL;
 }
 
-AVLTree *DeQueue(Queue *Q){
+AVL *DeQueue(Queue *Q){
 	List *tempNode;
-	AVLTree *temp;
+	AVL *temp;
 	tempNode=Q->front;
 	temp=tempNode->node;
 	if(Q->front->next)
@@ -131,9 +131,9 @@ void DeleteQueue(Queue *Q){
 	free(Q->front);
 }
 
-void printByLevelOrder(AVLTree *root){
+void printByLevelOrder(AVL *root){
 	Queue *Q=createQueue();
-	AVLTree *temp;
+	AVL *temp;
 	EnQueue(Q,root);
 	printf("\nLevel Order Print: ");
 	while(!isEmptyQueue(Q)){

@@ -1,11 +1,14 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include "queueForTree.h"
 
+/*
 typedef struct myAVLTree {
 	int data;
 	int height;
 	struct myAVLTree *left,*right;
 }AVL;
+*/
 
 void inorder(AVL *root);
 AVL *insert(AVL *root,int data);
@@ -23,10 +26,10 @@ int main(void) {
 	AVL *root=NULL;
 	int data,ch;
 	while(1) {
-		printf("\n1: Insert\n2: Delete\n3: Inorder\n4: Exit");
+		printf("\n1: Insert\n2: Delete\n3: Inorder\n4: Print By Level Order\n5:Exit");
 		printf("\nEnter your choice: ");
 		scanf("%d",&ch);
-	 	if(ch==4)
+	 	if(ch==5)
 	 		break;
 
 		switch(ch) {
@@ -44,6 +47,9 @@ int main(void) {
 			case 3:
 				printf("\nInorder: ");
 				inorder(root);
+				break;
+			case 4:
+				printByLevelOrder(root);
 				break;
 		}
 	}
