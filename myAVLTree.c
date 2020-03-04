@@ -21,13 +21,24 @@ int main(void) {
 	AVL *root=NULL;
 	int data;
 	while(1) {
-		printf("\nEnter data for a node: ");
-		scanf("%d",&data);
+		printf("\n1: Insert\n2: Delete\n3: Exit");
+		printf("\nEnter your choice: ");
+		scanf("%d",&ch);
+	 	if(ch==3)
+	 		break;
 
-		if(data==-1)
-			break;
+		switch(ch) {
 
-		root=insert(root,data);
+			case 1:
+				printf("\nEnter data for a node: ");
+				scanf("%d",&data);
+			 	root=insert(root,data);
+				break
+			case 2:
+				printf("\nEnter data to delete node: ");
+				scanf("%d",&data);
+				root = delete(root,data);
+				break;
 	}
 	inorder(root);
 	deleteTree(&root);
