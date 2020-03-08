@@ -1,0 +1,7 @@
+Root property: The root is black.
+
+External property: Every external node is black.
+
+Red property: The children of red node are black.
+
+Depth property: All external nodes have the same black depth.
