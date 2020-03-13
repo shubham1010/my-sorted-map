@@ -1,7 +1,5 @@
-Root property: The root is black.
-
-External property: Every external node is black.
-
-Red property: The children of red node are black.
-
-Depth property: All external nodes have the same black depth.
+Properties of red black tree:
+1) Every node is either red or black, Root node is always black.
+2) Every leaf is black.
+3) If a node is red, then both it's children are black.
+4) Every simple path from a node to a descendant leaf contains the same number of black nodes.

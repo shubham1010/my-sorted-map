@@ -4,5 +4,5 @@
 typedef struct RBTStruct {
 	int data;
 	struct RBTStruct *left,*right;
-	int color; // 0 for black and 1 for red
+	enum {red, black} colour; // 0 for black and 1 for red
 }RBT;
