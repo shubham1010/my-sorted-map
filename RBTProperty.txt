@@ -3,3 +3,12 @@ Properties of red black tree:
 2) Every leaf is black.
 3) If a node is red, then both it's children are black.
 4) Every simple path from a node to a descendant leaf contains the same number of black nodes.
+
+Conditions:
+
+1) If tree is empty, create newnode as root node with black colour.
+2) If tree is not empty, create newnode as leaf node with red colour.
+3) If parent of newnode is black then exit.
+3) If parent of newnode is red, then check the colour of parent's sibling of newnode:
+	a) If colour is black or null then do suitable rotation and recolour.
+	b) If colour is red then recolor and also check if parent's parent of newnode is not root node then recolour it and recheck.
