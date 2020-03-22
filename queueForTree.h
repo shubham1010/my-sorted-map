@@ -29,6 +29,7 @@ void printByLevelOrder(T *root);
 int isEmptyQueue(Queue *Q);
 void DeleteTree(T *root);
 void Inorder(T *root);
+extern void formatedPrint(T *root);
 
 /*int main(void){
 	int n,data;
@@ -141,7 +142,7 @@ void printByLevelOrder(T *root){
 	printf("\nLevel Order Print: ");
 	while(!isEmptyQueue(Q)){
 		temp=DeQueue(Q);
-		printf("\n%d with its color %d",temp->data,temp->color);
+		formatedPrint(temp);
 		if(temp->left)
 			EnQueue(Q,temp->left);
 		if(temp->right)

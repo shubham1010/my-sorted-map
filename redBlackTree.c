@@ -27,6 +27,7 @@ int printData(T *node);
 void recolor(T **node);
 void changeRoot(T **node);
 unsigned int isRootOfTree(T *node);
+extern void formatedPrint(T *root);
 
 int main(void) {
 	int data,ch;
@@ -98,9 +99,18 @@ T *newNode(int data) {
 void inorder(T *root) {
 	if(root!=NULL) {
 		inorder(root->left);
-		printf("\n\t\t *** %d with its color %d isParent = %d ***",root->data,root->color,root->isRoot);
+		formatedPrint(root);
 		inorder(root->right);
 	}
+}
+
+extern void formatedPrint(T *root) {
+	printf("\n\t\t *** %d with its color",root->data);
+	if(root->color==0)
+		printf(" red ");
+	else
+		printf(" black ");
+	printf("isParent = %d ***",root->isRoot);
 }
 
 T *insert(T *root,int data) {
