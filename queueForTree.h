@@ -5,6 +5,7 @@ typedef enum {red,black} Color;
 
 typedef struct TestTree {
     int data;
+	unsigned int isRoot;
     struct TestTree *left,*right,*parent;
     Color color;
 }T;

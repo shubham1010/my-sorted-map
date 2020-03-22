@@ -5,6 +5,7 @@
 
 /*typedef struct TestTree {
 	int data;
+	unsigned int isRoot;
 	struct TestTree *left,*right;
 	Color color;
 }T;*/
@@ -24,6 +25,8 @@ T *leftRotate(T *Y);
 Color whichColor(T *node);
 int printData(T *node);
 void recolor(T **node);
+void changeRoot(T **node);
+unsigned int isRootOfTree(T *node);
 
 int main(void) {
 	int data,ch;
@@ -82,9 +85,10 @@ T *newNode(int data) {
 
 	node->data = data;
 	node->right=node->left=NULL;
-	node->parent= NULL;
-	if(a==0)
+	if(a==0) {
 		node->color = black;
+		node->isRoot = 1;
+	}
 	else
 		node->color = red;
 	a+=1;
@@ -94,7 +98,7 @@ T *newNode(int data) {
 void inorder(T *root) {
 	if(root!=NULL) {
 		inorder(root->left);
-		printf("\n\t\t *** %d with its color %d ***",root->data,root->color);
+		printf("\n\t\t *** %d with its color %d isParent = %d ***",root->data,root->color,root->isRoot);
 		inorder(root->right);
 	}
 }
@@ -117,23 +121,45 @@ T *insert(T *root,int data) {
 			recolor(&root);
 			if(root->left && data < root->left->data) {
 				recolor(&(root->left));
+				
+				if(isRootOfTree(root)) {
+					changeRoot(&root);
+					changeRoot(&(root->left));
+				}
 				return rightRotate(root);
 			}
 			
 			if(root->right && data > root->right->data) {
 				recolor(&(root->right));
+				
+				if(isRootOfTree(root)) {
+					changeRoot(&root);
+					changeRoot(&(root->right));
+				}
+
 				return leftRotate(root);
 			}
 
 			if(root->left && data > root->left->data) {
 				root->left = leftRotate(root->left);
 				recolor(&(root->left));
+				
+				if(isRootOfTree(root)) {
+					changeRoot(&root);
+					changeRoot(&(root->left));
+				}
+
 				return rightRotate(root);
 			}
 
 			if(root->right && data < root->right->data) {
 				root->right = rightRotate(root->right);
 				recolor(&(root->right));
+				if(isRootOfTree(root)) {
+					changeRoot(&root);
+					changeRoot(&(root->right));
+				}
+
 				return leftRotate(root);
 			}
 
@@ -141,6 +167,13 @@ T *insert(T *root,int data) {
 		else {
 			printf("\n\t\t*** RED ***");
 			printf("\nCheck parent's parent is not a root node, then recolor and recheck");
+			recolor(&(root->left));
+			recolor(&(root->right));
+
+			if(!isRootOfTree(root))
+				recolor(&root);
+
+			return root;
 		}
 
 	}
@@ -184,10 +217,6 @@ T *leftRotate(T *W) {
 	W->right = Z;
 	X->left = W;
 
-	/*W->parent=X;
-	Z->parent=*W;
-	X->parent=NULL;*/
-
 	return X;
 }
 
@@ -204,10 +233,6 @@ T *rightRotate(T *X) {
 	W->right = X;
 	X->left = Z;
 	
-	/*X->parent=W;
-	Z->parent=X;
-	W->parent=NULL;*/
-
 	return W;
 }
 
@@ -218,4 +243,20 @@ void recolor(T **node) {
 		else
 			(*node)->color=black;
 	}
+}
+
+void changeRoot(T **node) {
+	if(*node) {
+		if((*node)->isRoot)
+			(*node)->isRoot=0;
+		else
+			(*node)->isRoot=1;
+	}
+}
+
+unsigned int isRootOfTree(T *node) {
+	if(node)
+		return (node->isRoot);
+	else 
+		return 0;
 }
