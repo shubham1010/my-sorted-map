@@ -127,11 +127,13 @@ T *insert(T *root,int data) {
 
 			if(root->left && data > root->left->data) {
 				root->left = leftRotate(root->left);
+				recolor(&(root->left));
 				return rightRotate(root);
 			}
 
 			if(root->right && data < root->right->data) {
 				root->right = rightRotate(root->right);
+				recolor(&(root->right));
 				return leftRotate(root);
 			}
 
