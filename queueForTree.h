@@ -1,14 +1,16 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-typedef struct StructTree{
-	int data;
-	struct StructTree *right,*left;
-	int height;
-}AVL;
+typedef enum {red,black} Color;
+
+typedef struct TestTree {
+    int data;
+    struct TestTree *left,*right,*parent;
+    Color color;
+}T;
 
 typedef struct StructList{
-	AVL *node;
+	T *node;
 	struct StructList *next;
 }List;
 
@@ -17,15 +19,15 @@ typedef struct StructQueue{
 }Queue;
 
 Queue *createQueue(void);
-AVL *createTreeByLevelOrder(int n);
-void EnQueue(Queue *Q,AVL *node);
-AVL *getFirstElementFromQueue(Queue *Q);
-AVL *DeQueue(Queue *Q);
+T *createTreeByLevelOrder(int n);
+void EnQueue(Queue *Q,T *node);
+T *getFirstElementFromQueue(Queue *Q);
+T *DeQueue(Queue *Q);
 void DeleteQueue(Queue *Q);
-void printByLevelOrder(AVL *root);
+void printByLevelOrder(T *root);
 int isEmptyQueue(Queue *Q);
-void DeleteTree(AVL *root);
-void Inorder(AVL *root);
+void DeleteTree(T *root);
+void Inorder(T *root);
 
 /*int main(void){
 	int n,data;
@@ -89,7 +91,7 @@ Queue *createQueue(void){
 }
 */
 
-void EnQueue(Queue *Q,AVL *node){
+void EnQueue(Queue *Q,T *node){
 	List *listNodes=(List *)malloc(sizeof(List));
 	listNodes->node=node;
 	listNodes->next=NULL;
@@ -101,16 +103,16 @@ void EnQueue(Queue *Q,AVL *node){
 	}
 }
 
-AVL *getFirstElementFromQueue(Queue *Q){
+T *getFirstElementFromQueue(Queue *Q){
 	if(Q->front)
 		return (Q->front->node);
 	else
 		return NULL;
 }
 
-AVL *DeQueue(Queue *Q){
+T *DeQueue(Queue *Q){
 	List *tempNode;
-	AVL *temp;
+	T *temp;
 	tempNode=Q->front;
 	temp=tempNode->node;
 	if(Q->front->next)
@@ -131,14 +133,14 @@ void DeleteQueue(Queue *Q){
 	free(Q->front);
 }
 
-void printByLevelOrder(AVL *root){
+void printByLevelOrder(T *root){
 	Queue *Q=createQueue();
-	AVL *temp;
+	T *temp;
 	EnQueue(Q,root);
 	printf("\nLevel Order Print: ");
 	while(!isEmptyQueue(Q)){
 		temp=DeQueue(Q);
-		printf("\n%d its height %d",temp->data,temp->height);
+		printf("\n%d with its color %d",temp->data,temp->color);
 		if(temp->left)
 			EnQueue(Q,temp->left);
 		if(temp->right)

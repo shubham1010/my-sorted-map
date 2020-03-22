@@ -1,15 +1,16 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include "queueForTree.h"
+//typedef enum {red,black} Color;
 
-typedef enum {red,black} Color;
-
-typedef struct TestTree {
+/*typedef struct TestTree {
 	int data;
-	struct TestTree *left,*right,*parent;
+	struct TestTree *left,*right;
 	Color color;
-}T;
+}T;*/
 
 static int a=0;
+unsigned int rCnt=1;
 
 T *insert(T *root,int data);
 void inorder(T *root);
@@ -17,29 +18,24 @@ void deleteTree(T **root);
 T *newNode(int data);
 int isPropertySatisfied(T *root);
 Color givesParentSiblingColor(T *root,int data);
-/*T *identifyWhichRotationAndRotate(T *root,int data);
+T *identifyWhichRotationAndRotate(T *root,int data);
 T *rightRotate(T *X);
-T *leftRotate(T *Y);*/
+T *leftRotate(T *Y);
 Color whichColor(T *node);
 int printData(T *node);
-
-// This is new implementation
-
-void identifyWhichRotationAndRotate(T **root,int data);
-void rightRotate(T ***X);
-void leftRotate(T ***Y);
+void recolor(T **node);
 
 int main(void) {
 	int data,ch;
 	T *root=NULL;
 	while(1) {
 		printf("\n__________________________________________________");
-		printf("\n1: Insert\n2: Inorder\n3: DeleteTree\n4: Exit");
+		printf("\n1: Insert\n2: Inorder\n3: Level Order Print\n4: DeleteTree\n5: Exit");
 		printf("\n__________________________________________________");
 		printf("\nEnter your choice: ");
 		scanf("%d",&ch);
 		
-		if(ch==4)
+		if(ch==5)
 			break;
 
 		switch(ch) {
@@ -55,6 +51,9 @@ int main(void) {
 					printf("\nTree is already NULL");
 				break;
 			case 3:
+				printByLevelOrder(root);
+				break;
+			case 4:
 				a=0;
 				deleteTree(&root);
 				break;
@@ -95,51 +94,60 @@ T *newNode(int data) {
 void inorder(T *root) {
 	if(root!=NULL) {
 		inorder(root->left);
-		printf("\n%d %d %d",printData(root),printData(root->left),printData(root->right));
-		printf("\nRoot->right->left->data = %d",root->right->left->data);
-		/*if(root->parent)
-			printf("\n%d has %d parent with its color %d",root->data,root->parent->data,root->color);
-		else
-			printf("\n%d has NULL parent with its color %d",root->data,root->color);
-		*/
+		printf("\n\t\t *** %d with its color %d ***",root->data,root->color);
 		inorder(root->right);
 	}
 }
 
 T *insert(T *root,int data) {
-	if(root==NULL) {
+	if(root==NULL)
 		return (newNode(data));
-	}
-	else if(data > root->data) {
+	else if(data > root->data)
 		root->right = insert(root->right,data);
-		root->right->parent = root;
-	}
-	else if(data < root->data) {
+	else if(data < root->data) 
 		root->left = insert(root->left,data);
-		root->left->parent = root;
-	}
+	else
+		return root;
 
-	if(!isPropertySatisfied(root)) {
-		printf("\n\t\t***Property is not satisfied..!!***");
+	if(rCnt==2) {
+		rCnt=1;
 		if(givesParentSiblingColor(root,data) == black) {
 			printf("\n\t\t*** BLACK ***");
-			printf("\nPerform suitable rotation and recolor");
+			printf("\n\t\t *** This node is ready for rotation = %d ***",root->data);
+			recolor(&root);
+			if(root->left && data < root->left->data) {
+				recolor(&(root->left));
+				return rightRotate(root);
+			}
 			
-			//root = (identifyWhichRotationAndRotate((root->parent),data));
-			(identifyWhichRotationAndRotate(&(root->parent),data));
-			
-			printf("\n\n\t\t*** Root Informations ***");
-			printf("\nRoot->data = %d and parent = %d",printData(root),printData(root->parent));
-			printf("\nRoot->left->data = %d and parent = %d",printData(root->left),printData(root->left->parent));
-			printf("\nRoot->right->data = %d and parent = %d",printData(root->right),printData(root->right->parent));
+			if(root->right && data > root->right->data) {
+				recolor(&(root->right));
+				return leftRotate(root);
+			}
+
+			if(root->left && data > root->left->data) {
+				root->left = leftRotate(root->left);
+				return rightRotate(root);
+			}
+
+			if(root->right && data < root->right->data) {
+				root->right = rightRotate(root->right);
+				return leftRotate(root);
+			}
 
 		}
 		else {
 			printf("\n\t\t*** RED ***");
 			printf("\nCheck parent's parent is not a root node, then recolor and recheck");
 		}
+
 	}
-	
+
+	if(root->color==red) {
+		rCnt+=1;
+		printf("\nrCnt is incremented...!!");
+	}
+
 	return root;
 }
 
@@ -150,22 +158,11 @@ int printData(T *node) {
 
 }
 
-Color givesParentSiblingColor(T *root,int data) {
-	if(root) {
-		if(root->left && root->left->data==data) {
-			if(root->parent->left==root)
-				return whichColor(root->parent->right);
-			else
-				return whichColor(root->parent->left);
-		}
-		else if(root->right && root->right->data==data) {
-			if(root->parent->right==root)
-				return whichColor(root->parent->left);
-			else
-				return whichColor(root->parent->right);
-		}
-	}
-	return black;
+Color givesParentSiblingColor(T *node,int data) {
+	if(data > node->data)
+		return whichColor(node->left);
+	else
+		return whichColor(node->right);
 }
 
 Color whichColor(T *node) {
@@ -174,63 +171,26 @@ Color whichColor(T *node) {
 	return node->color;
 }
 
-int isPropertySatisfied(T *root) {
-	if(root==NULL || root->parent==NULL)
-		return 1;
-	if(root && root->parent) {
-		if(root->color==red && root->parent->color==red)
-			return 0;
-		else
-			return (1 && isPropertySatisfied(root->left) && isPropertySatisfied(root->right));
-	}
-}
-/*
-T *identifyWhichRotationAndRotate(T *root,int data) {
-	printf("\n\t\t***Working Processing...***");
-	
-	if(root) {
-		if(root->left && data < root->left->data)
-			return rightRotate(root);
-		
-		if(root->right && data > root->right->data)
-			return leftRotate(root);
-
-		if(root->left && data > root->left->data) {
-			root->left = leftRotate(root->left);
-			return rightRotate(root);
-		}
-
-		if(root->right && data < root->right->data) {
-			root->right = rightRotate(root->right);
-			return leftRotate(root);
-		}
-	}
-	//return root;
-}
-
 T *leftRotate(T *W) {
-	printf("\n\t\t*** Inside Left Rotation***");
-	printf("\n\t\t*** Performing Rotation of %d node***",printData(W));
-	
+	printf("\n\t\t*** Performing Left Rotation of %d node***",printData(W));
 	T *X = W->right;
 	T *Z;
 	if(X->left)
 		Z = X->left;
 	else
 		Z = NULL;
-	X->left = W;
 	W->right = Z;
+	X->left = W;
 
-	W->parent=X;
-	Z->parent=W;
-	X->parent=NULL;
-	
+	/*W->parent=X;
+	Z->parent=*W;
+	X->parent=NULL;*/
+
 	return X;
 }
 
 T *rightRotate(T *X) {
-	printf("\n\t\t*** Inside Right Rotation***");
-	printf("\n\t\t*** Performing Rotation of %d node***",X->data);
+	printf("\n\t\t*** Performing Right Rotation of %d node***",X->data);
 	T *W = X->left;
 	T *Z;
 
@@ -241,79 +201,19 @@ T *rightRotate(T *X) {
 
 	W->right = X;
 	X->left = Z;
-
-	X->parent=W;
+	
+	/*X->parent=W;
 	Z->parent=X;
-	W->parent=NULL;
+	W->parent=NULL;*/
 
 	return W;
 }
-*/
-// This is new trying...
 
-void identifyWhichRotationAndRotate(T **root,int data) {
-	printf("\n\t\t***Working Processing...***");
-	
-	if(*root) {
-		if((*root)->left && data < (*root)->left->data)
-			rightRotate(&(root));
-		
-		if((*root)->right && data > (*root)->right->data)
-			leftRotate(&(root));
-
-		if((*root)->left && data > (*root)->left->data) {
-			leftRotate(&root->left);
-			rightRotate(&(root));
-		}
-
-		if((*root)->right && data < (*root)->right->data) {
-			rightRotate(&root->right);
-			leftRotate(&(root));
-		}
+void recolor(T **node) {
+	if(*node) {
+		if ((*node)->color==black) 
+			(*node)->color=red;
+		else
+			(*node)->color=black;
 	}
-	//return root;
-}
-
-void leftRotate(T ***W) {
-	printf("\n\t\t*** Inside Left Rotation***");
-	printf("\n\t\t*** Performing Rotation of %d node***",(*(*W))->data);
-	
-/*	T *X = W->right;
-	T *Z;
-	if(X->left)
-		Z = X->left;
-	else
-		Z = NULL;
-	X->left = W;
-	W->right = Z;
-
-	W->parent=X;
-	Z->parent=W;
-	X->parent=NULL;
-	
-	return X;*/
-}
-
-void rightRotate(T ***X) {
-	printf("\n\t\t*** Inside Right Rotation***");
-	printf("\n\t\t*** Performing Rotation of %d node***",printData((**X)));
-	
-	/*
-	T *W = X->left;
-	T *Z;
-
-	if(W->right)
-		Z = W->right;
-	else
-		Z = NULL;
-
-	W->right = X;
-	X->left = Z;
-
-	X->parent=W;
-	Z->parent=X;
-	W->parent=NULL;
-
-	return W;
-	*/
 }
